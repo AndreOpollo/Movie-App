@@ -4,9 +4,12 @@ import { StatusBar } from 'expo-status-bar'
 import {Bars3CenterLeftIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline'
 import { useState } from 'react'
 import TrendingMovies from '../components/TrendingMovies'
+import MovieList from '../components/MovieList'
 
 export default function HomeScreen(){
     const[trending, setTrending]=useState([1,2,3,4])
+    const[upcoming,setUpcoming]=useState([1,2,3,4])
+    const[topRated,setTopRated]=useState([1,2,3,4])
 
     return(
         <View style={styles.container}>
@@ -28,6 +31,8 @@ export default function HomeScreen(){
              contentContainerStyle={{padding:10}}>
             
                <TrendingMovies data={trending}/>
+               <MovieList title='Upcoming'data={upcoming}/>
+               <MovieList title='Top Rated' data={topRated}/>
                
 
             </ScrollView>
