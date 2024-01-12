@@ -4,19 +4,25 @@ import { TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 var{width,height}=Dimensions.get('window')
-export default function MovieList({title, data}){
+export default function MovieList({title, data,hideSeeAll}){
     const navigation = useNavigation()
-    const handleClick = ()=>{
-        navigation.navigate('Movie',item)
+    const handleClick = (item)=>{
+        navigation.push('Movie',item)
     }
     let movieName = 'Ant-Man and the Wasp: Quantamania'
     return(
         <View style={styles.container}>
             <View style={styles.innerContainer}>
             <Text style={styles.title}>{title}</Text>
-            <TouchableOpacity>
-                <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
+            {
+                !hideSeeAll && (
+                    <TouchableOpacity>
+                    <Text style={styles.seeAll}>See All</Text>
+                </TouchableOpacity>
+
+                )
+            }
+          
             </View>
             <ScrollView
             horizontal
@@ -28,7 +34,7 @@ export default function MovieList({title, data}){
                     return(
                         <TouchableWithoutFeedback
                         key={index}
-                        onPress={handleClick}>
+                        onPress={()=>handleClick(item)}>
                             <View style={styles.upcomingContainer}>
                             <Image
                             source={require('../assets/moviePoster2.png')}

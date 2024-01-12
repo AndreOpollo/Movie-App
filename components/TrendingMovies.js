@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 var{width,height} = Dimensions.get('window')
 export default function TrendingMovies({data}){
     const navigation = useNavigation()
-    const handleClick=()=>{
+    const handleClick=(item)=>{
         navigation.navigate('Movie',item)
     }
     return(
@@ -15,7 +15,7 @@ export default function TrendingMovies({data}){
         <Carousel
         data={data}
         renderItem={({item})=>(
-            <MovieCard item={item} handleClick={handleClick}/>
+            <MovieCard item={item} handleClick={()=>handleClick(item)}/>
         )}
         firstItem={1}
         inactiveSlideOpacity={0.60}
