@@ -7,6 +7,8 @@ import {HeartIcon} from 'react-native-heroicons/solid'
 import {LinearGradient} from 'expo-linear-gradient'
 import Cast from '../components/Cast'
 import MovieList from '../components/MovieList'
+import Loading from '../components/Loading'
+
 
 var{width,height} = Dimensions.get('window')
 export default function MovieScreen(){
@@ -14,6 +16,7 @@ export default function MovieScreen(){
     const[isFavorite, toggleFavorite]=useState(false)
     const[cast,setCast]=useState([1,2,3,4,5])
     const[similarMovies,setSimilarMovies]=useState([1,2,3,4,5])
+    const[loading,setLoading]=useState(false)
     const {params:item}=useRoute()
     const navigation = useNavigation()
     
@@ -21,70 +24,83 @@ export default function MovieScreen(){
         //Make API call
     },[item])
   return(
-
         <ScrollView
         contentContainerStyle={{paddingBottom:20}}
         style={styles.scrollView}>
-            <View style={styles.container}>
-                <SafeAreaView style={styles.innerContainer}>
-                    <TouchableOpacity onPress={()=>navigation.goBack()}style={styles.icon}>
-                        <ChevronLeftIcon size={30} strokeWidth={2.5} color='white'/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>toggleFavorite(!isFavorite)}>
-                        <HeartIcon size={35} color={isFavorite?Colors.yellow:"white"}/>
-                    </TouchableOpacity>
-                </SafeAreaView>
-                <View>
-                    <Image
-                    source={require('../assets/moviePoster2.png')}
-                    style={{
-                        width:width,
-                        height:height*0.52
-                    }}/>
-                    <LinearGradient
-                    colors={['transparent','rgba(23,23,23,0.8)','rgba(23,23,23,1)']}
-                    style={{
-                        width:width,
-                        height:height*0.4,
-                        position:"absolute",
-                        bottom:0
-                    }}
-                    start={{x:0.5,y:0}}
-                    end={{x:0.5,y:1}}/>
-                </View>
+            {
+                loading?(
+                    <Loading/>
 
-            </View>
-            {/* Movie Details */}
-            <View style={styles.movieContainer}>
-                <Text style={styles.movieTitle}>
-                    {movieName}
-                </Text>
-                <Text style={styles.movieInfo}>
-                    Released • 2020 • 170 min
-                </Text>
-            </View>
-            {/*genres */}
-            <View style={styles.genreContainer}>
-                <Text style={styles.movieInfo}>
-                Action • 
-                </Text>
-                <Text style={styles.movieInfo}>
-                Thrill • 
-                </Text>
-                <Text style={styles.movieInfo}>
-                    Comedy
-                </Text>
-                
-
-            </View>
-            {/* Description */}
-            <Text style={styles.description}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada ultricies erat eu commodo. In aliquam egestas erat, at laoreet justo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce non consectetur neque. Duis in lobortis ipsum. Nulla quis ipsum aliquet, dapibus enim non, ullamcorper tortor. Pellentesque volutpat volutpat iaculis. Mauris in efficitur libero, in porta nisl. In vitae magna iaculis, interdum felis a, sollicitudin nibh. Nam mauris ligula, tempor vitae magna ac, mollis egestas tortor. Mauris et tempor quam.
-               
-            </Text>
-            <Cast navigation={navigation}cast={cast}/>
-            <MovieList title='Similar Movies' hideSeeAll={true} data={similarMovies}/>
-
+                ):(
+                    <View>
+                    <View style={styles.container}>
+                        <SafeAreaView style={styles.innerContainer}>
+                            <TouchableOpacity onPress={()=>navigation.goBack()}style={styles.icon}>
+                                <ChevronLeftIcon size={30} strokeWidth={2.5} color='white'/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>toggleFavorite(!isFavorite)}>
+                                <HeartIcon size={35} color={isFavorite?Colors.yellow:"white"}/>
+                            </TouchableOpacity>
+                        </SafeAreaView>
+                        
+                                <View>
+                                <Image
+                                source={require('../assets/moviePoster2.png')}
+                                style={{
+                                    width:width,
+                                    height:height*0.52
+                                }}/>
+                                <LinearGradient
+                                colors={['transparent','rgba(23,23,23,0.8)','rgba(23,23,23,1)']}
+                                style={{
+                                    width:width,
+                                    height:height*0.4,
+                                    position:"absolute",
+                                    bottom:0
+                                }}
+                                start={{x:0.5,y:0}}
+                                end={{x:0.5,y:1}}/>
+                            </View>
+        
+                            
+                        
+                       
+        
+                    </View>
+                    {/* Movie Details */}
+                    <View style={styles.movieContainer}>
+                        <Text style={styles.movieTitle}>
+                            {movieName}
+                        </Text>
+                        <Text style={styles.movieInfo}>
+                            Released • 2020 • 170 min
+                        </Text>
+                    </View>
+                    {/*genres */}
+                    <View style={styles.genreContainer}>
+                        <Text style={styles.movieInfo}>
+                        Action • 
+                        </Text>
+                        <Text style={styles.movieInfo}>
+                        Thrill • 
+                        </Text>
+                        <Text style={styles.movieInfo}>
+                            Comedy
+                        </Text>
+                        
+        
+                    </View>
+                    {/* Description */}
+                    <Text style={styles.description}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada ultricies erat eu commodo. In aliquam egestas erat, at laoreet justo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce non consectetur neque. Duis in lobortis ipsum. Nulla quis ipsum aliquet, dapibus enim non, ullamcorper tortor. Pellentesque volutpat volutpat iaculis. Mauris in efficitur libero, in porta nisl. In vitae magna iaculis, interdum felis a, sollicitudin nibh. Nam mauris ligula, tempor vitae magna ac, mollis egestas tortor. Mauris et tempor quam.
+                       
+                    </Text>
+                    <Cast navigation={navigation}cast={cast}/>
+                    <MovieList title='Similar Movies' hideSeeAll={true} data={similarMovies}/>
+                    </View>
+                )
+            }
+       
         </ScrollView>
     
   )

@@ -5,11 +5,15 @@ import {Bars3CenterLeftIcon, MagnifyingGlassIcon} from 'react-native-heroicons/o
 import { useState } from 'react'
 import TrendingMovies from '../components/TrendingMovies'
 import MovieList from '../components/MovieList'
+import { useNavigation } from '@react-navigation/native'
+import Loading from '../components/Loading'
 
 export default function HomeScreen(){
     const[trending, setTrending]=useState([1,2,3,4])
     const[upcoming,setUpcoming]=useState([1,2,3,4])
     const[topRated,setTopRated]=useState([1,2,3,4])
+    const[loading,setLoading]=useState(false)
+    const navigation = useNavigation()
 
     return(
         <View style={styles.container}>
@@ -21,21 +25,29 @@ export default function HomeScreen(){
                    <Text style={styles.moviesText}>
                     <Text style={{color:Colors.yellow}}>M</Text>ovies
                     </Text>
-                   <TouchableOpacity>
+                   <TouchableOpacity onPress={()=>navigation.navigate('Search')}>
                     <MagnifyingGlassIcon size={30}strokeWidth={2} color="white"/>
                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
-            <ScrollView
-             showsVerticalScrollIndicator={false}
-             contentContainerStyle={{padding:10}}>
-            
-               <TrendingMovies data={trending}/>
-               <MovieList title='Upcoming'data={upcoming}/>
-               <MovieList title='Top Rated' data={topRated}/>
-               
+            {
+                loading?(
+                    <Loading/>
+                ):(
+                    <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{padding:10}}>
+                   
+                      <TrendingMovies data={trending}/>
+                      <MovieList title='Upcoming'data={upcoming}/>
+                      <MovieList title='Top Rated' data={topRated}/>
+                      
+       
+                   </ScrollView>
 
-            </ScrollView>
+                )
+            }
+           
         </View>
     )
 }

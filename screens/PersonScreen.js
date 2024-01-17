@@ -5,16 +5,24 @@ import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 import { HeartIcon } from 'react-native-heroicons/solid'
 import { useNavigation } from '@react-navigation/native'
 import MovieList from '../components/MovieList'
+import Loading from '../components/Loading'
+
 
 var{width,height} = Dimensions.get('window')
 export default function PersonScreen() {
   const[isFavorite, toggleFavorite] = useState(false)
   const[personMovies,setPersonMovies]=useState([1,2,3,4,5])
+  const[loading,setLoading]=useState(false)
   const navigation = useNavigation()
   return (
     <ScrollView 
     style={styles.container}
     contentContainerStyle={{paddingBottom:20}}>
+      {
+        loading?(
+          <Loading/>
+        ):(
+          <View>
       <SafeAreaView style={styles.innerContainer}>
         <TouchableOpacity 
         style={styles.icon}
@@ -25,12 +33,9 @@ export default function PersonScreen() {
           <HeartIcon size={35} color={isFavorite?'red':'white'}/>
         </TouchableOpacity>
       </SafeAreaView>
+     
 
-      <View style={{
-                
-        
-               
-      }}>
+      <View>
         <View style={styles.imageOuterContainer}>
           <View style={styles.imageContainer}>
           <Image
@@ -80,7 +85,12 @@ export default function PersonScreen() {
         </View>
         <MovieList title='Movies' hideSeeAll={true} data={personMovies}/>
       </View>
+      </View>
 
+
+        )
+      }
+      
     </ScrollView>
   )
 }
