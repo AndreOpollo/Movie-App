@@ -2,8 +2,10 @@ import {View,Text, Dimensions, SafeAreaView,StyleSheet, TextInput, TouchableOpac
 import Colors from '../constants/Colors'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Loading from '../components/Loading'
+import { fallbackMoviePoster, image185, searchMovie } from '../api/moviedb'
+import {debounce} from 'lodash'
 
 var{width,height}=Dimensions.get('window')
 export default function SearchScreen(){
@@ -11,10 +13,33 @@ export default function SearchScreen(){
     const[loading,setLoading]=useState(false)
     const navigation = useNavigation()
     let movieName = 'Ant-Man and the Wasp: Quantamania'
+    const handleSearch = (value)=>{
+        if(value && value.length>2){
+            setLoading(true)
+            searchMovie(
+                {
+                    query:value,
+                    include_adult:'false',
+                    language:'en-US',
+                    page:'1'
+
+                }
+            ).then(data=>{
+                setLoading(false)
+                if(data&&data.results){
+                    setResults(data.results)
+                }else{
+                    setResults({})
+                }
+            })
+        }
+    }
+    const handleTextDebounce = useCallback(debounce(handleSearch,400),[])
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.searchContainer}>
                 <TextInput
+                onChangeText={handleTextDebounce}
                 placeholder='Search Movie'
                 placeholderTextColor={'lightgray'}
                 style={styles.search}/>
@@ -45,16 +70,18 @@ export default function SearchScreen(){
                                     results.map((item,index)=>{
                                         return(
                                             <TouchableWithoutFeedback
+                                            onPress={()=>navigation.navigate('Movie',item)}
                                             key={index}>
+                                                
                                                 <View style={styles.imageContainer}>
                                                     <Image
-                                                    source={require('../assets/moviePoster2.png')}
+                                                    source={{uri:image185(item?.poster_path)||fallbackMoviePoster}}
                                                     style={{
                                                         height:height*0.3,
-                                                        width:width*0.45,
+                                                        width:width*0.42,
                                                         borderRadius:40           }}/>
                                                         <Text style={styles.movieName}>
-                                                            {movieName.length>22?movieName.slice(0,22)+'...':movieName}
+                                                            {item?.title?.length>20?item?.title?.slice(0,20)+'...':item?.title}
                                                         </Text>
                                                 </View>
                 

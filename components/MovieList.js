@@ -2,6 +2,7 @@ import{View,Text,StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions,
 import Colors from '../constants/Colors'
 import { TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { fallbackMoviePoster, image500 } from '../api/moviedb'
 
 var{width,height}=Dimensions.get('window')
 export default function MovieList({title, data,hideSeeAll}){
@@ -37,7 +38,7 @@ export default function MovieList({title, data,hideSeeAll}){
                         onPress={()=>handleClick(item)}>
                             <View style={styles.upcomingContainer}>
                             <Image
-                            source={require('../assets/moviePoster2.png')}
+                            source={{uri:image500(item.poster_path)||fallbackMoviePoster}}
                             style={{
                                 height:height*0.22,
                                 width:width*0.33,
@@ -46,7 +47,7 @@ export default function MovieList({title, data,hideSeeAll}){
                             }}/>
                             <Text style={{color:Colors.txneutral300,marginLeft:4}}>
                         {
-                        movieName.length>14? movieName.slice(0,14)+'...':movieName
+                        item.original_title.length>14? item.original_title.slice(0,14)+'...':item.original_title
                     }
                         </Text>
                             </View>

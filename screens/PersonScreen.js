@@ -1,19 +1,46 @@
 import { View, Text ,ScrollView, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions,Image} from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Colors from '../constants/Colors'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 import { HeartIcon } from 'react-native-heroicons/solid'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import MovieList from '../components/MovieList'
 import Loading from '../components/Loading'
+import { fallbackPersonImage, fetchPersonDetails, fetchPersonMovies, image342, image500 } from '../api/moviedb'
 
 
 var{width,height} = Dimensions.get('window')
 export default function PersonScreen() {
+  const{params:item}=useRoute()
   const[isFavorite, toggleFavorite] = useState(false)
-  const[personMovies,setPersonMovies]=useState([1,2,3,4,5])
+  const[personMovies,setPersonMovies]=useState([])
+  const[personDetails,setPersonDetails]=useState({})
+  
   const[loading,setLoading]=useState(false)
   const navigation = useNavigation()
+
+  useEffect(()=>{
+    setLoading(true)
+    getPersonDetails(item.id)
+    getPersonMovies(item.id)
+
+  },[item])
+  const getPersonDetails = async (id)=>{
+    const data = await fetchPersonDetails(id)
+    if(data){
+      setPersonDetails(data)      
+    }
+    setLoading(false)
+  }
+  const getPersonMovies = async (id)=>{
+    const data = await fetchPersonMovies(id)
+    if(data && data.cast){
+      setPersonMovies(data.cast)
+    }
+  }
+  
+  
+
   return (
     <ScrollView 
     style={styles.container}
@@ -39,7 +66,7 @@ export default function PersonScreen() {
         <View style={styles.imageOuterContainer}>
           <View style={styles.imageContainer}>
           <Image
-          source={require('../assets/castImage2.png')}
+          source={{uri:image342(personDetails?.profile_path)||fallbackPersonImage}}
           style={{
             height:height*0.43,
             width:width*0.74
@@ -49,28 +76,32 @@ export default function PersonScreen() {
         </View>
         <View style={{marginTop:24}}>
           <Text style={styles.name}>
-            Keanu Reaves
+            {item.name}
           </Text>
           <Text style={styles.location}>
-            London, United Kingdom
+            {item.place_of_birth}
           </Text>
         </View>
         <View style={styles.personalInfo}>
           <View style={styles.infoContainer}>
             <Text style={styles.text}>Gender</Text>
-            <Text style={styles.text2}>Male</Text>
+            <Text style={styles.text2}>{
+              personDetails?.gender=='1'?'Female':'Male'}
+
+              
+          </Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.text}>Birthday</Text>
-            <Text style={styles.text2}>1964-12-19</Text>
+            <Text style={styles.text2}>{personDetails?.birthday}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.text}>Known for</Text>
-            <Text style={styles.text2}>Acting</Text>
+            <Text style={styles.text2}>{personDetails?.known_for_department}</Text>
           </View>
           <View style={styles.lastInfoContainer}>
             <Text style={styles.text}>Popularity</Text>
-            <Text style={styles.text2}>64.23</Text>
+            <Text style={styles.text2}>{personDetails?.popularity}</Text>
           </View>
 
         </View>
@@ -80,7 +111,7 @@ export default function PersonScreen() {
         }}> 
           <Text style={{fontSize:18,color:"white"}}>Biography</Text>
           <Text style={{color:Colors.txneutral400}}>
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada ultricies erat eu commodo. In aliquam egestas erat, at laoreet justo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce non consectetur neque. Duis in lobortis ipsum. Nulla quis ipsum aliquet, dapibus enim non, ullamcorper tortor. Pellentesque volutpat volutpat iaculis. Mauris in efficitur libero, in porta nisl. In vitae magna iaculis, interdum felis a, sollicitudin nibh. Nam mauris ligula, tempor vitae magna ac, mollis egestas tortor. Mauris et tempor quam.
+            {personDetails?.biography}
          </Text>
         </View>
         <MovieList title='Movies' hideSeeAll={true} data={personMovies}/>

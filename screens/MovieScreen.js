@@ -8,21 +8,50 @@ import {LinearGradient} from 'expo-linear-gradient'
 import Cast from '../components/Cast'
 import MovieList from '../components/MovieList'
 import Loading from '../components/Loading'
+import { fetchMovieCredits, fetchMovieDetails, fetchSimilarMovies, image500 } from '../api/moviedb'
 
 
 var{width,height} = Dimensions.get('window')
 export default function MovieScreen(){
-    let movieName = 'Ant-Man and the Wasp: Quantamania'
+    
     const[isFavorite, toggleFavorite]=useState(false)
-    const[cast,setCast]=useState([1,2,3,4,5])
-    const[similarMovies,setSimilarMovies]=useState([1,2,3,4,5])
+    const[cast,setCast]=useState([])
+    const[similarMovies,setSimilarMovies]=useState([])
     const[loading,setLoading]=useState(false)
+    const[movie,setMovie]=useState({})
     const {params:item}=useRoute()
     const navigation = useNavigation()
     
     useEffect(()=>{
-        //Make API call
+
+      setLoading(true)
+      getMovieDetails(item.id)
+      getCastDetails(item.id)
+      getSimilarMovies(item.id)
+
+
     },[item])
+
+    const getMovieDetails = async (id)=>{
+        const data = await fetchMovieDetails(id)
+        if(data){
+            setMovie(data)
+        }
+      
+        setLoading(false)
+    }
+    const getCastDetails = async(id)=>{
+        const data = await fetchMovieCredits(id)
+        if(data && data.cast){
+            setCast(data.cast)
+        }
+    }
+    const getSimilarMovies = async(id)=>{
+        const data = await fetchSimilarMovies(id)
+        if(data && data.results){
+            setSimilarMovies(data.results)
+        }
+    }
   return(
         <ScrollView
         contentContainerStyle={{paddingBottom:20}}
@@ -45,7 +74,8 @@ export default function MovieScreen(){
                         
                                 <View>
                                 <Image
-                                source={require('../assets/moviePoster2.png')}
+                               // source={require('../assets/moviePoster2.png')}
+                               source={{uri:image500(movie?.poster_path)}}
                                 style={{
                                     width:width,
                                     height:height*0.52
@@ -70,30 +100,34 @@ export default function MovieScreen(){
                     {/* Movie Details */}
                     <View style={styles.movieContainer}>
                         <Text style={styles.movieTitle}>
-                            {movieName}
+                            {movie?.original_title}
                         </Text>
                         <Text style={styles.movieInfo}>
-                            Released • 2020 • 170 min
+                            {movie?.status} • {movie?.release_date?.split('-')[0]} • {movie?.runtime} min
                         </Text>
                     </View>
                     {/*genres */}
                     <View style={styles.genreContainer}>
-                        <Text style={styles.movieInfo}>
-                        Action • 
-                        </Text>
-                        <Text style={styles.movieInfo}>
-                        Thrill • 
-                        </Text>
-                        <Text style={styles.movieInfo}>
-                            Comedy
-                        </Text>
+                        {
+                            movie?.genres?.map((genre,index)=>{
+                                let showdot = index+1 !=movie.genres.length
+                                return(
+                                    <Text key={index} style={styles.movieInfo}>
+                                    {genre?.name} {showdot?'•':null} 
+                                    </Text>
+
+                                )
+                            })
+                        }
+
+                       
+                        
                         
         
                     </View>
                     {/* Description */}
                     <Text style={styles.description}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada ultricies erat eu commodo. In aliquam egestas erat, at laoreet justo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce non consectetur neque. Duis in lobortis ipsum. Nulla quis ipsum aliquet, dapibus enim non, ullamcorper tortor. Pellentesque volutpat volutpat iaculis. Mauris in efficitur libero, in porta nisl. In vitae magna iaculis, interdum felis a, sollicitudin nibh. Nam mauris ligula, tempor vitae magna ac, mollis egestas tortor. Mauris et tempor quam.
-                       
+                       {movie?.overview}
                     </Text>
                     <Cast navigation={navigation}cast={cast}/>
                     <MovieList title='Similar Movies' hideSeeAll={true} data={similarMovies}/>
