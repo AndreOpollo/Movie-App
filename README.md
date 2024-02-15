@@ -1,4 +1,4 @@
-![Homescreen3](https://github.com/AndreOpollo/Movie-App/assets/98306500/73f0687d-6633-4126-8327-b67f3df0c5e2)## Movie App
+## Movie App
 A Movie app that displays different movies and their details using the TMDB API
 ## Technologies
 This app has been built using React-Native. The styling has been done using the StyleSheet API. It also utilizes React Native Navigation
